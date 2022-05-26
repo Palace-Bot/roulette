@@ -26,7 +26,7 @@ public class RouletteCommand extends SimpleCommand {
 
     @CommandHandler
     public void handler(CommandSender commandSender, CommandSession session) {
-        if(!exist(commandSender.getSubject().getId())){
+        if (!exist(commandSender.getSubject().getId())) {
             rouletteHandler(commandSender, session);
         }
     }
@@ -64,7 +64,7 @@ public class RouletteCommand extends SimpleCommand {
 
     }
 
-    private boolean exist(Long groupId){
+    private boolean exist(Long groupId) {
         return groupRouletteMap.containsKey(groupId);
     }
 
