@@ -13,21 +13,36 @@ import java.util.Random;
  */
 @Getter
 public class Roulette {
+    /**
+     * 随机种子
+     */
     private final Random random;
 
-    private final Integer max;
+    /**
+     * 最大次数
+     */
+    private final Integer maxCount;
 
+    /**
+     * 当前次数
+     */
     private Integer currentCount;
 
+    /**
+     * 中枪
+     */
     private boolean shot;
 
+    /**
+     * 参与者
+     */
     private final List<User> participants;
 
-    public Roulette(Integer max) {
+    public Roulette(Integer maxCount) {
         this.random = new Random();
-        this.max = max;
+        this.maxCount = maxCount;
         this.currentCount = 0;
-        this.participants = new ArrayList<>(max);
+        this.participants = new ArrayList<>(maxCount);
     }
 
     private void add(User user) {
@@ -37,8 +52,7 @@ public class Roulette {
 
     public boolean shot(User user) {
         add(user);
-        shot = random.nextInt(max) == 0;
-        return shot;
+        return maxCount.equals(currentCount) || random.nextInt(maxCount) == 0;
     }
 
 }

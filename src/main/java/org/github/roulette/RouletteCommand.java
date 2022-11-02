@@ -36,10 +36,10 @@ public class RouletteCommand extends SimpleCommand {
         rouletteHandler(commandSender, session);
     }
 
-    public void rouletteHandler(CommandSender commandSender, CommandSession session) {
+    private void rouletteHandler(CommandSender commandSender, CommandSession session) {
         Long groupId = commandSender.getSubject().getId();
 
-        // (1) 判断群聊已经开启转盘
+        // (1) 群聊已经开启转盘
         Roulette roulette = groupRouletteMap.get(groupId);
         if (roulette == null) {
             roulette = new Roulette(6);
@@ -47,32 +47,36 @@ public class RouletteCommand extends SimpleCommand {
         }
 
         // (2) 开枪
-        boolean isShot = roulette.shot(commandSender.getUser());
+        boolean shot = roulette.shot(commandSender.getUser());
 
         // (3) 转换消息
-        StringBuilder sb = tansform(new StringBuilder(), isShot);
-        sb.append("（").append(roulette.getCurrentCount()).append(" / ").append(roulette.getMax()).append("）");
+        StringBuilder sb = transform(new StringBuilder(), shot);
+        sb.append("（").append(roulette.getCurrentCount()).append(" / ").append(roulette.getMaxCount()).append("）");
 
-        if (roulette.getMax().equals(roulette.getCurrentCount()) || isShot) {
-            commandSender.sendMessage(new At(commandSender.getUser().getId()).plus(" ").plus(sb.toString()));
-            commandSender.getBot().getGroup(groupId).get(commandSender.getUser().getId()).mute(5);
-            groupRouletteMap.remove(groupId);
-            session.finish();
+        if (shot) {
+            try {
+                commandSender.sendMessage(new At(commandSender.getUser().getId()).plus(" ").plus(sb.toString()));
+                commandSender.getBot().getGroup(groupId).get(commandSender.getUser().getId()).mute(5);
+            } catch (Exception ignored) {
+            } finally {
+                groupRouletteMap.remove(groupId);
+                session.finish();
+            }
         } else {
             commandSender.sendMessage(sb.toString());
         }
-
     }
 
     private boolean exist(Long groupId) {
         return groupRouletteMap.containsKey(groupId);
     }
 
-    private StringBuilder tansform(StringBuilder sb, boolean shot) {
+    private StringBuilder transform(StringBuilder sb, boolean shot) {
         if (shot) {
-            sb.append("枪声响起，");
+            sb.append("枪声响起");
+
         } else {
-            sb.append("没有枪声，");
+            sb.append("没有枪声");
         }
         return sb;
     }
